@@ -89,12 +89,15 @@ int main()
 	glBindVertexArray(0);
 
 
-
 	while (!glfwWindowShouldClose(window)) {
 		process_input(window);
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		float timeVal = static_cast<float>(glfwGetTime()) * 0.1f;
+		int vertexColLocation{glGetUniformLocation(shaderProgram, "u_time")};
+		glUniform1f(vertexColLocation, timeVal);
 
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);

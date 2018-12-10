@@ -95,7 +95,7 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		float timeVal = static_cast<float>(glfwGetTime()) * 0.1f;
+		float timeVal = static_cast<float>(glfwGetTime());
 		int vertexColLocation{glGetUniformLocation(shaderProgram, "u_time")};
 		glUniform1f(vertexColLocation, timeVal);
 

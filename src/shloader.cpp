@@ -2,6 +2,26 @@
 #include <glad/glad.h>
 #include <iostream>
 #include <cassert>
+#include <cstring>
+
+namespace {
+
+    SHADER_TYPE get_shader_type(char const* shader_path)
+    {
+        char const* index{ shader_path };
+        while (*(++index) != '\0');
+        while (*(--index) != '.');
+        assert(*index == '.');
+        
+        if (strcmp(++index, "vert") == 0)
+            return SHADER_TYPE::VERTEX;
+        if (strcmp(index, "frag") == 0)
+            return SHADER_TYPE::FRAGMENT;
+
+        assert(false);
+    }
+
+}
 
 ShaderLoader::ShaderLoader(char const* path)
 {
@@ -52,49 +72,69 @@ char const* ShaderLoader::read()
 
 // SIMPLE SHADER
 
-SimpleShader::SimpleShader(char const* path, SHADER_TYPE shaderType)
-    : remains_active{ true }
-{
-    ShaderLoader sl{path};
-    char const* shaderSource{sl.read()};
-
-    if (shaderType == SHADER_TYPE::VERTEX)
-        shader_ = glCreateShader(GL_VERTEX_SHADER);
-    else
-        shader_ = glCreateShader(GL_FRAGMENT_SHADER);
-
-    glShaderSource(shader_, 1, &shaderSource, nullptr);
-    glCompileShader(shader_);
-
-    check_errors();
-}
-
-SimpleShader::~SimpleShader()
-{
-    delete_shader();
-}
-
-void SimpleShader::delete_shader()
-{
-    if (remains_active)
-        glDeleteShader(shader_);
-    remains_active = false;
-}
-
 unsigned& SimpleShader::operator()()
 {
-    return shader_;
+    static int i = -1;
+    return shaders_[++i];
 }
 
-void SimpleShader::check_errors()
+void SimpleShader::check_errors(int index)
 {
     int const cMaxMsgLen = 512;
     int success;
 	char infoLog[cMaxMsgLen];
-	glGetShaderiv(shader_, GL_COMPILE_STATUS, &success);
+	glGetShaderiv(shaders_[index], GL_COMPILE_STATUS, &success);
 	if (!success) {
-		glGetShaderInfoLog(shader_, cMaxMsgLen, nullptr, infoLog);
+		glGetShaderInfoLog(shaders_[index], cMaxMsgLen, nullptr, infoLog);
 		std::cerr << "Vertex: " << infoLog << std::endl;
         assert(false);
 	}
+}
+
+void SimpleShader::check_errors_program()
+{
+    int const cMaxMsgLen = 512;
+    int success;
+	char infoLog[cMaxMsgLen];
+	glGetProgramiv(program_, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(program_, cMaxMsgLen, nullptr, infoLog);
+		std::cerr << "Vertex: " << infoLog << std::endl;
+        assert(false);
+	}
+}
+
+void SimpleShader::init_shader(char const* shaderPath)
+{
+    static int index = -1;
+    SHADER_TYPE shaderType{get_shader_type(shaderPath)};
+
+    ShaderLoader sl{shaderPath};
+    char const* shaderSource{sl.read()};
+
+    assert(++index < MAX_SHADERS + 1);
+    if (shaderType == SHADER_TYPE::VERTEX)
+        shaders_[index] = glCreateShader(GL_VERTEX_SHADER);
+    else if (shaderType == SHADER_TYPE::FRAGMENT)
+        shaders_[index] = glCreateShader(GL_FRAGMENT_SHADER);
+    else
+        assert(false);
+
+    glShaderSource(shaders_[index], 1, &shaderSource, nullptr);
+    glCompileShader(shaders_[index]);
+
+    check_errors(index);
+    ++shaders_count_;
+}
+
+void SimpleShader::init_program()
+{
+    program_ = glCreateProgram();
+    for (int i = 0; i < shaders_count_; ++i)
+        glAttachShader(program_, shaders_[i]);
+    glLinkProgram(program_);
+    check_errors_program();
+
+    for (int i = 0; i < shaders_count_; ++i)
+        glDeleteShader(shaders_[i]);
 }

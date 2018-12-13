@@ -39,7 +39,7 @@ int main()
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-	SimpleShader vertexShader{"../shaders/01.vert", "../shaders/01.frag"};
+	SimpleShader mainShader{"../shaders/01.vert", "../shaders/01.frag"};
 
 	float vertices[]{
 		-1.0f, 1.0f, 0.0f,  1.0f, 0.0f, 0.0f,
@@ -82,10 +82,9 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		float timeVal = static_cast<float>(glfwGetTime());
-		int vertexColLocation{glGetUniformLocation(vertexShader.get(), "u_time")};
-		glUniform1f(vertexColLocation, timeVal);
+		mainShader.uni_float("u_time", timeVal);
 
-		vertexShader.use();
+		mainShader.use();
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 

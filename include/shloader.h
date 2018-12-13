@@ -36,8 +36,10 @@ public:
     unsigned& operator()();
 
     void use() { glUseProgram(program_); }
-    void stop_using();
-    unsigned& get() { return program_; }
+    void stop_using(); // not implemented yet
+
+    void uni_float(char const*, float);
+    void uni_int(char const*, int);
 
 private:
     unsigned shaders_[MAX_SHADERS];

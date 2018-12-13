@@ -138,3 +138,13 @@ void SimpleShader::init_program()
     for (int i = 0; i < shaders_count_; ++i)
         glDeleteShader(shaders_[i]);
 }
+
+void SimpleShader::uni_float(char const* uni_name, float val)
+{
+    glUniform1f(glGetUniformLocation(program_, uni_name), val);
+}
+
+void SimpleShader::uni_int(char const* uni_name, int val)
+{
+    glUniform1i(glGetUniformLocation(program_, uni_name), val);
+}

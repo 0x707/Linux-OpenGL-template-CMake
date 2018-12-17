@@ -13,6 +13,11 @@ void process_input(GLFWwindow* window)
 	glfwSetWindowShouldClose(window, glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS);
 }
 
+bool is_key_pressed(GLFWwindow* window, int key)
+{
+	return glfwGetKey(window, key) == GLFW_PRESS;
+}
+
 int main()
 {
 	ShaderLoader sl{"../shaders/pupa.txt"};
@@ -39,7 +44,12 @@ int main()
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-	SimpleShader mainShader{"../shaders/01.vert", "../shaders/01.frag"};
+	constexpr char const* paths[2]{
+		"../shaders/01.vert",
+		"../shaders/01.frag"
+	};
+
+	SimpleShader mainShader{paths[0], paths[1]};
 
 	float vertices[]{
 		-1.0f, 1.0f, 0.0f,  1.0f, 0.0f, 0.0f,
@@ -77,6 +87,9 @@ int main()
 
 	while (!glfwWindowShouldClose(window)) {
 		process_input(window);
+
+		if (is_key_pressed(window, GLFW_KEY_LEFT_ALT) && is_key_pressed(window, GLFW_KEY_Q))
+			mainShader.reload(paths[0], paths[1]);
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);

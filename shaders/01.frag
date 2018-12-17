@@ -14,6 +14,6 @@ void main()
     float tv = (sin(u_time * 1.3f));
     float tv1 = (cos(u_time * 1.3f));
 
-    FragColor = vec4(Col.r, 0.0, 0.0, 1.0f);
+    FragColor = vec4(Col.r, 0.0f, 0.0f, 1.0f);
     //FragColor = vec4(1.0, y, 0.0f, 1.0f); // Wroclaw's flag
 }

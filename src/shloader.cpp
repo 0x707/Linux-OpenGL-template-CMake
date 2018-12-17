@@ -8,14 +8,14 @@ namespace {
 
     SHADER_TYPE get_shader_type(char const* shader_path)
     {
-        char const* index{ shader_path };
-        while (*(++index) != '\0');
-        while (*(--index) != '.');
-        assert(*index == '.');
+        char const* index_{ shader_path };
+        while (*(++index_) != '\0');
+        while (*(--index_) != '.');
+        assert(*index_ == '.');
         
-        if (strcmp(++index, "vert") == 0)
+        if (strcmp(++index_, "vert") == 0)
             return SHADER_TYPE::VERTEX;
-        if (strcmp(index, "frag") == 0)
+        if (strcmp(index_, "frag") == 0)
             return SHADER_TYPE::FRAGMENT;
 
         assert(false);
@@ -78,14 +78,14 @@ unsigned& SimpleShader::operator()()
     return shaders_[++i];
 }
 
-void SimpleShader::check_errors(int index)
+void SimpleShader::check_errors()
 {
     int const cMaxMsgLen = 512;
     int success;
 	char infoLog[cMaxMsgLen];
-	glGetShaderiv(shaders_[index], GL_COMPILE_STATUS, &success);
+	glGetShaderiv(shaders_[index_], GL_COMPILE_STATUS, &success);
 	if (!success) {
-		glGetShaderInfoLog(shaders_[index], cMaxMsgLen, nullptr, infoLog);
+		glGetShaderInfoLog(shaders_[index_], cMaxMsgLen, nullptr, infoLog);
 		std::cerr << "Vertex: " << infoLog << std::endl;
         assert(false);
 	}
@@ -106,36 +106,34 @@ void SimpleShader::check_errors_program()
 
 void SimpleShader::init_shader(char const* shaderPath)
 {
-    static int index = -1;
     SHADER_TYPE shaderType{get_shader_type(shaderPath)};
 
     ShaderLoader sl{shaderPath};
     char const* shaderSource{sl.read()};
 
-    assert(++index < MAX_SHADERS + 1);
+    assert(++index_ < MAX_SHADERS + 1);
     if (shaderType == SHADER_TYPE::VERTEX)
-        shaders_[index] = glCreateShader(GL_VERTEX_SHADER);
+        shaders_[index_] = glCreateShader(GL_VERTEX_SHADER);
     else if (shaderType == SHADER_TYPE::FRAGMENT)
-        shaders_[index] = glCreateShader(GL_FRAGMENT_SHADER);
+        shaders_[index_] = glCreateShader(GL_FRAGMENT_SHADER);
     else
         assert(false);
 
-    glShaderSource(shaders_[index], 1, &shaderSource, nullptr);
-    glCompileShader(shaders_[index]);
+    glShaderSource(shaders_[index_], 1, &shaderSource, nullptr);
+    glCompileShader(shaders_[index_]);
 
-    check_errors(index);
-    ++shaders_count_;
+    check_errors();
 }
 
 void SimpleShader::init_program()
 {
     program_ = glCreateProgram();
-    for (int i = 0; i < shaders_count_; ++i)
+    for (int i = 0; i < index_ + 1; ++i)
         glAttachShader(program_, shaders_[i]);
     glLinkProgram(program_);
     check_errors_program();
 
-    for (int i = 0; i < shaders_count_; ++i)
+    for (int i = 0; i < index_ + 1; ++i)
         glDeleteShader(shaders_[i]);
 }
 

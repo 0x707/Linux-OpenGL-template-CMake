@@ -41,13 +41,15 @@ public:
     void uni_float(char const*, float);
     void uni_int(char const*, int);
 
+    template<typename... Cargs>
+    void reload(Cargs const*...);
 private:
     unsigned shaders_[MAX_SHADERS];
     unsigned program_;
     bool remains_active_;
-    int shaders_count_ = 0;
+    int index_ = -1;
 
-    void check_errors(int);
+    void check_errors();
     void check_errors_program();
     void init_shader(char const*);
     void init_program();
@@ -76,6 +78,14 @@ void SimpleShader::unpack(C const* carg, Cargs const* ...cargs)
 {
     init_shader(carg);
     unpack(cargs...);
+}
+
+template<typename... Cargs>
+void SimpleShader::reload(Cargs const* ...cargs)
+{
+    index_ = -1;
+    unpack(cargs...);
+    init_program();
 }
 
 #endif // !SHLOADER_CLASS_H_

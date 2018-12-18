@@ -33,7 +33,6 @@ public:
 
     SimpleShader(SimpleShader const&) = delete;
     SimpleShader& operator=(SimpleShader const&) = delete;
-    unsigned& operator()();
 
     void use() { glUseProgram(program_); }
     void stop_using(); // not implemented yet

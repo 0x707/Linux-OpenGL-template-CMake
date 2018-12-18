@@ -49,6 +49,7 @@ void ShaderLoader::close()
     if (content_ != nullptr)
         delete[] content_;
     file_ = nullptr;
+    content_ = nullptr;
 }
 
 char const* ShaderLoader::read()
@@ -71,12 +72,6 @@ char const* ShaderLoader::read()
 }
 
 // SIMPLE SHADER
-
-unsigned& SimpleShader::operator()()
-{
-    static int i = -1;
-    return shaders_[++i];
-}
 
 void SimpleShader::check_errors()
 {

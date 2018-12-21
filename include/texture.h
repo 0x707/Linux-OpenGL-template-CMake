@@ -1,6 +1,8 @@
 #ifndef TEXTURE_KERAM_CLASS_H_
 #define TEXTURE_KERAM_CLASS_H_
 
+constexpr int MAX_TEX_NO{9};
+
 class TextureLoader
 {
 public:

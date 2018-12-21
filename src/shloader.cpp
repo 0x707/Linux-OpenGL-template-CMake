@@ -130,6 +130,8 @@ void SimpleShader::init_program()
 
     for (int i = 0; i < index_ + 1; ++i)
         glDeleteShader(shaders_[i]);
+
+    use();
 }
 
 void SimpleShader::uni_float(char const* uni_name, float val)

@@ -86,6 +86,10 @@ int main()
 	glEnableVertexAttribArray(2);
 
 	Texture2d tex("img.png");
+	Texture2d tex2("kk.jpg");
+
+	mainShader.uni_int("theTex", 0);
+	mainShader.uni_int("theKej", 1);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -95,8 +99,11 @@ int main()
 	while (!glfwWindowShouldClose(window)) {
 		process_input(window);
 
-		if (is_key_pressed(window, GLFW_KEY_LEFT_ALT) && is_key_pressed(window, GLFW_KEY_Q))
+		if (is_key_pressed(window, GLFW_KEY_LEFT_ALT) && is_key_pressed(window, GLFW_KEY_Q)) {
 			mainShader.reload(paths[0], paths[1]);
+			mainShader.uni_int("theTex", 0);
+			mainShader.uni_int("theKej", 1);
+		}
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -104,7 +111,6 @@ int main()
 		float timeVal = static_cast<float>(glfwGetTime());
 		mainShader.uni_float("u_time", timeVal);
 
-		mainShader.use();
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 

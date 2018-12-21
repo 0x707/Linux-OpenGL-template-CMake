@@ -1,4 +1,4 @@
-#include "glad/glad.h"
+#include <glad/glad.h>
 #include "stb_image.h"
 #include "texture.h"
 #include <cassert>
@@ -28,8 +28,9 @@ void TextureLoader::free_buffer()
 
 Texture2d::Texture2d(char const* path)
 {
-    static int index = 0;
+    static int index = -1;
     glGenTextures(++index, &tex_holder_);
+    glActiveTexture(GL_TEXTURE0 + index);
     glBindTexture(GL_TEXTURE_2D, tex_holder_);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	

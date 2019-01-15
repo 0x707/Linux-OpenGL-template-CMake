@@ -89,7 +89,7 @@ MatrixWrapper<V, S2, S1> operator*(MatrixWrapper<V, S0, S1> const& left,
 		}
 	}
 
-	return result
+	return result;
 }
 
 template<typename T, size_t N0, size_t N1>

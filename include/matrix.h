@@ -4,7 +4,7 @@
 using std::array;
 using std::size_t;
 
-template<typename T, std::size_t N0, std::size_t N1>
+template<typename T, size_t N0, size_t N1>
 using flat_mat = array<T, N0 * N1>;
 
 
@@ -22,17 +22,22 @@ private:
 	unsigned cols_count_;
 };
 
-template<typename T, std::size_t N0, std::size_t N1>
+template<typename T, size_t N0, size_t N1>
 struct MatrixWrapper
 {
 public:
 	template<typename... Args>
 	MatrixWrapper(Args ...args);
 
+	MatrixWrapper(array<T, N0 * N1> const&);
 	MatrixWrapper(array<T, N0 * N1> &&);
 
-	template<typename V, std::size_t S0, std::size_t S1, std::size_t S2>
-	friend MatrixWrapper<V, S2, S1> operator*(MatrixWrapper<V, S0, S1>&, MatrixWrapper<V, S2, S0>&);
+	template<typename V, size_t S0, size_t S1, size_t S2>
+	MatrixWrapper<V, S2, S1>& operator*=(MatrixWrapper<V, S2, S0> const&);
+
+	template<typename V, size_t S0, size_t S1, size_t S2>
+	friend MatrixWrapper<V, S2, S1> operator*(MatrixWrapper<V, S0, S1> const&,
+		MatrixWrapper<V, S2, S0> const&);
 
 	ArrayWrapper<array<T,N0 *N1>> operator[](unsigned);
 	ArrayWrapper<const array<T,N0 *N1>> operator[](unsigned) const;
@@ -44,36 +49,47 @@ private:
 	array<T, N0 * N1> flat_matrix_;
 };
 
-template<typename T, std::size_t N0, std::size_t N1>
+template<typename T, size_t N0, size_t N1>
 template<typename... Args>
 MatrixWrapper<T, N0, N1>::MatrixWrapper(Args ...args)
 	: flat_matrix_{ args... }
 {
 }
 
-template<typename T, std::size_t N0, std::size_t N1>
-MatrixWrapper<T, N0, N1>::MatrixWrapper(array<T, N0 * N1> && w)
-	: flat_matrix_{std::move(w)}
+template<typename T, size_t N0, size_t N1>
+MatrixWrapper<T, N0, N1>::MatrixWrapper(array<T, N0 * N1> const& other)
+	: flat_matrix_{ other }
 {
 }
 
-template<typename V, std::size_t S0, std::size_t S1, std::size_t S2>
-MatrixWrapper<V, S2, S1> operator*(MatrixWrapper<V, S0, S1>& left, MatrixWrapper<V, S2, S0>& right)
+template<typename T, size_t N0, size_t N1>
+MatrixWrapper<T, N0, N1>::MatrixWrapper(array<T, N0 * N1> && other)
+	: flat_matrix_{std::move(other)}
+{
+}
+
+template<typename T, size_t N0, size_t N1>
+template<typename V, size_t S0, size_t S1, size_t S2>
+MatrixWrapper<V, S2, S1>&
+MatrixWrapper<T, N0, N1>::operator*=(MatrixWrapper<V, S2, S0> const& other)
+{
+}
+
+template<typename V, size_t S0, size_t S1, size_t S2>
+MatrixWrapper<V, S2, S1> operator*(MatrixWrapper<V, S0, S1> const& left,
+	MatrixWrapper<V, S2, S0> const& right)
 {
 	MatrixWrapper<V, S2, S1> result;
-	V temp;
 
 	for (unsigned k = 0; k < S2; ++k) {
 		for (unsigned i = 0; i < S1; ++i) {
-			temp = 0;
 			for (unsigned j = 0; j < S0; ++j) {
-				temp += left.at(i,j) * right.at(j,k);
+				result.at(i,k) += left.at(i,j) * right.at(j,k);
 			}
-			result.at(i,k) = temp;
 		}
 	}
 
-	return result;
+	return result
 }
 
 template<typename T, size_t N0, size_t N1>

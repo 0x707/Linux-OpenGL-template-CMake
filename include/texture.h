@@ -22,8 +22,10 @@ class Texture2d
 {
 public:
     Texture2d(char const*);
+    ~Texture2d();
 private:
     unsigned tex_holder_;
+    static int index_;
 };
 
 #endif// !TEXTURE_KERAM_CLASS_H_

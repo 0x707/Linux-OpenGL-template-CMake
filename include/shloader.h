@@ -34,8 +34,6 @@ public:
     SimpleShader(SimpleShader const&) = delete;
     SimpleShader& operator=(SimpleShader const&) = delete;
 
-    void use() { glUseProgram(program_); }
-    void stop_using(); // not implemented yet
 
     void uni_float(char const*, float);
     void uni_int(char const*, int);
@@ -52,6 +50,8 @@ private:
     void check_errors_program();
     void init_shader(char const*);
     void init_program();
+    void use() { glUseProgram(program_); }
+    void stop_using() { glDeleteProgram(program_); }
 
     template<typename C = char>
     void unpack(C const*);

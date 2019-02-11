@@ -26,11 +26,13 @@ void TextureLoader::free_buffer()
 
 // TEXTURE
 
+int Texture2d::index_ = -1;
+
 Texture2d::Texture2d(char const* path)
 {
-    static int index = -1;
-    glGenTextures(++index, &tex_holder_);
-    glActiveTexture(GL_TEXTURE0 + index);
+    //static int index = -1;
+    glGenTextures(1, &tex_holder_);
+    glActiveTexture(GL_TEXTURE0 + (++index_));
     glBindTexture(GL_TEXTURE_2D, tex_holder_);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
@@ -39,4 +41,9 @@ Texture2d::Texture2d(char const* path)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     TextureLoader loader{ path };
+}
+
+Texture2d::~Texture2d()
+{
+    glDeleteTextures(1, &tex_holder_);
 }

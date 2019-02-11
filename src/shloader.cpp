@@ -8,20 +8,20 @@ namespace {
 
     SHADER_TYPE get_shader_type(char const* shader_path)
     {
-        char const* index_{ shader_path };
-        while (*(++index_) != '\0');
-        while (*(--index_) != '.');
-        assert(*index_ == '.');
+        char const* index{ shader_path };
+        while (*(++index) != '\0');
+        while (*(--index) != '.');
+        assert(*index == '.');
         
-        if (strcmp(++index_, "vert") == 0)
+        if (strcmp(++index, "vert") == 0)
             return SHADER_TYPE::VERTEX;
-        if (strcmp(index_, "frag") == 0)
+        if (strcmp(index, "frag") == 0)
             return SHADER_TYPE::FRAGMENT;
 
         assert(false);
     }
 
-}
+} // namespace anonymous
 
 ShaderLoader::ShaderLoader(char const* path)
 {
@@ -68,7 +68,7 @@ char const* ShaderLoader::read()
        content_[fByteSize] = '\0';
        return content_;
    }
-
+   return "";
 }
 
 // SIMPLE SHADER
@@ -94,7 +94,7 @@ void SimpleShader::check_errors_program()
 	glGetProgramiv(program_, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(program_, cMaxMsgLen, nullptr, infoLog);
-		std::cerr << "Vertex: " << infoLog << std::endl;
+		std::cerr << "Program: " << infoLog << std::endl;
         assert(false);
 	}
 }
@@ -122,6 +122,7 @@ void SimpleShader::init_shader(char const* shaderPath)
 
 void SimpleShader::init_program()
 {
+    stop_using();
     program_ = glCreateProgram();
     for (int i = 0; i < index_ + 1; ++i)
         glAttachShader(program_, shaders_[i]);

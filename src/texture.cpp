@@ -7,7 +7,7 @@ TextureLoader::TextureLoader(char const* path)
     : buffer_{ stbi_load(path, &width_, &height_, &no_channels_, 0) }
 {
     assert(buffer_ != nullptr);
-    //glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width_, height_, 0, GL_RGB, GL_UNSIGNED_BYTE, buffer_);
     glGenerateMipmap(GL_TEXTURE_2D);
 }

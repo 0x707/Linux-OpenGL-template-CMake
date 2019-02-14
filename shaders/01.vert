@@ -7,9 +7,11 @@ out vec3 Pos;
 out vec3 Col;
 out vec2 Tex;
 
+uniform mat4 transform;
+
 void main()
 {
-    gl_Position = vec4(aPos.xyz, 1.0);
+    gl_Position = transform * vec4(aPos.xyz, 1.0);
     Pos = aPos;
     Col = aCol;
     Tex = aTex;

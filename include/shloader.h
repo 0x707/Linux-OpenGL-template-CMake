@@ -37,6 +37,8 @@ public:
 
     void uni_float(char const*, float);
     void uni_int(char const*, int);
+    void uni_mat4fv(char const*, float const*);
+    unsigned const& get_program() const { return program_; }
 
     template<typename... Cargs>
     void reload(Cargs const*...);

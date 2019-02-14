@@ -3,6 +3,9 @@
 #include <iostream>
 #include "shloader.h"
 #include "texture.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 void framebuffer_size_callback(GLFWwindow* window, int w, int h)
 {
@@ -87,32 +90,63 @@ int main()
 
 	Texture2d tex("img.png");
 	Texture2d tex2("kk.jpg");
+	Texture2d tex3("pikameme.png");
 
 	mainShader.uni_int("theTex", 0);
 	mainShader.uni_int("theKej", 1);
+	mainShader.uni_int("pikachu", 2);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-
+	glm::mat4 trans = glm::mat4(1.0f);
 
 	while (!glfwWindowShouldClose(window)) {
 		process_input(window);
+
+
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glBindVertexArray(VAO);
+
+		float timeVal = static_cast<float>(glfwGetTime());
+		mainShader.uni_float("u_time", timeVal);
+
+		trans = glm::mat4(1.0f);
+		trans = glm::translate(trans, glm::vec3(0.5f,-0.5f,0.0f));
+		trans = glm::rotate(trans, timeVal, glm::vec3(0.0f,0.0f,1.0f));
+		trans = glm::scale(trans, glm::vec3(0.4f,0.4f,0.4f));
+		mainShader.uni_mat4fv("transform", glm::value_ptr(trans));
+
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(0.5f, 0.5f, 0.0f));
+        //float scaleAmount = sin(glfwGetTime());
+        trans = glm::rotate(trans, timeVal, glm::vec3(0.0f,0.0f,-1.0f));
+		trans = glm::scale(trans, glm::vec3(0.4f,0.4f,0.4f));
+        mainShader.uni_mat4fv("transform", glm::value_ptr(trans));
+
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(-0.5f, 0.5f, 0.0f));
+        //float scaleAmount = sin(glfwGetTime());
+        trans = glm::rotate(trans, timeVal, glm::vec3(0.0f,0.0f,1.0f));
+		trans = glm::scale(trans, glm::vec3(0.4f,0.4f,0.4f));
+        mainShader.uni_mat4fv("transform", glm::value_ptr(trans));
+
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		if (is_key_pressed(window, GLFW_KEY_LEFT_ALT) && is_key_pressed(window, GLFW_KEY_Q)) {
 			mainShader.reload(paths[0], paths[1]);
 			mainShader.uni_int("theTex", 0);
 			mainShader.uni_int("theKej", 1);
+			mainShader.uni_int("pikachu", 2);
+
+			unsigned transLoc = glGetUniformLocation(mainShader.get_program(), "transform");
+			glUniformMatrix4fv(transLoc, 1, GL_FALSE, glm::value_ptr(trans));
 		}
-
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		float timeVal = static_cast<float>(glfwGetTime());
-		mainShader.uni_float("u_time", timeVal);
-
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

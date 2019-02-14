@@ -144,3 +144,8 @@ void SimpleShader::uni_int(char const* uni_name, int val)
 {
     glUniform1i(glGetUniformLocation(program_, uni_name), val);
 }
+
+void SimpleShader::uni_mat4fv(char const* uni_name, float const* mat_ptr)
+{
+    glUniformMatrix4fv(glGetUniformLocation(program_, uni_name), 1, GL_FALSE, mat_ptr);
+}

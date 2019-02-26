@@ -3,9 +3,8 @@
 #include <iostream>
 #include "shloader.h"
 #include "texture.h"
-#include <glm/glm.hpp>
+#include "matrix.h"
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 void framebuffer_size_callback(GLFWwindow* window, int w, int h)
 {
@@ -20,6 +19,14 @@ void process_input(GLFWwindow* window)
 bool is_key_pressed(GLFWwindow* window, int key)
 {
 	return glfwGetKey(window, key) == GLFW_PRESS;
+}
+
+void trans_rot_scale(Mat4f& m, vec3 const* v_arr, float t)
+{
+	m.normalize();
+	m.translate(v_arr[modif::TRNS]);
+	m.rotate(t, v_arr[modif::SCLE]);
+	m.scale(v_arr[modif::ROTE]);
 }
 
 int main()
@@ -56,10 +63,10 @@ int main()
 	SimpleShader mainShader{paths[0], paths[1]};
 
 	float vertices[]{
-		-1.0f, 1.0f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
-		 1.0f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f,
-		 1.0f,-1.0f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f,
-		-1.0f,-1.0f, 0.0f,  0.0f, 1.0f, 1.0f,  1.0f, 1.0f
+		-0.5f, 0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
+		 0.5f, 0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f,
+		 0.5f,-0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f,
+		-0.5f,-0.5f, 0.0f,  0.0f, 1.0f, 1.0f,  1.0f, 1.0f
 	};
 
 	unsigned indices[] {
@@ -99,7 +106,17 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	glm::mat4 trans = glm::mat4(1.0f);
+	Mat4f trans;
+
+	Mat4f model;
+	model.rotate(glm::radians(-55.0f), {1.0f, 0.0f, 0.0f});
+
+	Mat4f view;
+	view.translate({0.0f, 0.0f, -3.0f});
+
+	Mat4f projection;
+	projection.perspective(glm::radians(45.0f), 800.f, 600.f, 0.1f, 100.0f);
+	
 
 	while (!glfwWindowShouldClose(window)) {
 		process_input(window);
@@ -112,31 +129,10 @@ int main()
 		float timeVal = static_cast<float>(glfwGetTime());
 		mainShader.uni_float("u_time", timeVal);
 
-		trans = glm::mat4(1.0f);
-		trans = glm::translate(trans, glm::vec3(0.5f,-0.5f,0.0f));
-		trans = glm::rotate(trans, timeVal, glm::vec3(0.0f,0.0f,1.0f));
-		trans = glm::scale(trans, glm::vec3(0.4f,0.4f,0.4f));
-		mainShader.uni_mat4fv("transform", glm::value_ptr(trans));
-
+		mainShader.uni_mat4fv("model", model.first_elem());
+		mainShader.uni_mat4fv("view", view.first_elem());
+		mainShader.uni_mat4fv("projection", projection.first_elem());
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-		trans = glm::mat4(1.0f);
-        trans = glm::translate(trans, glm::vec3(0.5f, 0.5f, 0.0f));
-        //float scaleAmount = sin(glfwGetTime());
-        trans = glm::rotate(trans, timeVal, glm::vec3(0.0f,0.0f,-1.0f));
-		trans = glm::scale(trans, glm::vec3(0.4f,0.4f,0.4f));
-        mainShader.uni_mat4fv("transform", glm::value_ptr(trans));
-
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-		trans = glm::mat4(1.0f);
-        trans = glm::translate(trans, glm::vec3(-0.5f, 0.5f, 0.0f));
-        //float scaleAmount = sin(glfwGetTime());
-        trans = glm::rotate(trans, timeVal, glm::vec3(0.0f,0.0f,1.0f));
-		trans = glm::scale(trans, glm::vec3(0.4f,0.4f,0.4f));
-        mainShader.uni_mat4fv("transform", glm::value_ptr(trans));
-
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		if (is_key_pressed(window, GLFW_KEY_LEFT_ALT) && is_key_pressed(window, GLFW_KEY_Q)) {
 			mainShader.reload(paths[0], paths[1]);
@@ -144,8 +140,7 @@ int main()
 			mainShader.uni_int("theKej", 1);
 			mainShader.uni_int("pikachu", 2);
 
-			unsigned transLoc = glGetUniformLocation(mainShader.get_program(), "transform");
-			glUniformMatrix4fv(transLoc, 1, GL_FALSE, glm::value_ptr(trans));
+			mainShader.uni_mat4fv("transform", trans.first_elem());
 		}
 
 		glfwSwapBuffers(window);

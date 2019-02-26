@@ -56,16 +56,16 @@ char const* ShaderLoader::read()
 {
    if (file_ != nullptr) {
        fseek(file_, 0, SEEK_END);
-       long fByteSize{ftell(file_)};
+       long f_byte_size{ftell(file_)};
        fseek(file_, 0, SEEK_SET);
 
-       content_ = new char[fByteSize + 1];
-       fread(content_, sizeof(char), fByteSize, file_);
+       content_ = new char[f_byte_size + 1];
+       fread(content_, sizeof(char), f_byte_size, file_);
        if (ferror(file_)) {
            std::cerr << "Error while reading file.\n";
            assert(false);
        }
-       content_[fByteSize] = '\0';
+       content_[f_byte_size] = '\0';
        return content_;
    }
    return "";
@@ -107,12 +107,16 @@ void SimpleShader::init_shader(char const* shaderPath)
     char const* shaderSource{sl.read()};
 
     assert(++index_ < MAX_SHADERS + 1);
-    if (shaderType == SHADER_TYPE::VERTEX)
-        shaders_[index_] = glCreateShader(GL_VERTEX_SHADER);
-    else if (shaderType == SHADER_TYPE::FRAGMENT)
-        shaders_[index_] = glCreateShader(GL_FRAGMENT_SHADER);
-    else
-        assert(false);
+    switch (shaderType) {
+        case SHADER_TYPE::VERTEX:
+            shaders_[index_] = glCreateShader(GL_VERTEX_SHADER);
+            break;
+        case SHADER_TYPE::FRAGMENT:
+            shaders_[index_] = glCreateShader(GL_FRAGMENT_SHADER);
+            break;
+        default:
+            assert(false);
+    }
 
     glShaderSource(shaders_[index_], 1, &shaderSource, nullptr);
     glCompileShader(shaders_[index_]);

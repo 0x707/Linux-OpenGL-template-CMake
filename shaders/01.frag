@@ -2,7 +2,7 @@
 out vec4 FragColor;
 
 in vec3 Pos;
-in vec3 Col;
+//in vec3 Col;
 in vec2 Tex;
 uniform float u_time;
 uniform sampler2D theTex;
@@ -11,12 +11,12 @@ uniform sampler2D pikachu;
 
 void main()
 {
-    float x = 1.0f/ Pos.x;
+    /*float x = 1.0f/ Pos.x;
     float y = 1.0f/ Pos.y;
     float x1 = gl_FragCoord.x / 800.f;
     float y1 = gl_FragCoord.y / 600.f;
     float tv = (sin(u_time * 3.3f));
-    float tv1 = (cos(u_time * 13.3f));
+    float tv1 = (cos(u_time * 13.3f));*/
 
     FragColor = texture(pikachu, Tex);
     //FragColor = texture(pikachu, Tex) * vec4(Col.r * tv1 + 0.24f, Col.g * tv, Col.b * (tv * tv1), 1.0f); // pikameme

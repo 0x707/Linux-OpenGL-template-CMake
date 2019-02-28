@@ -54,6 +54,7 @@ int main()
 	}
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glEnable(GL_DEPTH_TEST);
 
 	constexpr char const* paths[2]{
 		"../shaders/01.vert",
@@ -62,12 +63,49 @@ int main()
 
 	SimpleShader mainShader{paths[0], paths[1]};
 
-	float vertices[]{
-		-0.5f, 0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
-		 0.5f, 0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f,
-		 0.5f,-0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f,
-		-0.5f,-0.5f, 0.0f,  0.0f, 1.0f, 1.0f,  1.0f, 1.0f
-	};
+	float vertices[] = {
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    };
 
 	unsigned indices[] {
 		0, 1, 2,
@@ -76,24 +114,21 @@ int main()
 
 	unsigned EBO, VBO, VAO;
 	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &EBO);
+	//glGenBuffers(1, &EBO);
 	glGenBuffers(1, &VBO);
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
 
 	Texture2d tex("img.png");
 	Texture2d tex2("kk.jpg");
@@ -108,31 +143,31 @@ int main()
 
 	Mat4f trans;
 
-	Mat4f model;
-	model.rotate(glm::radians(-55.0f), {1.0f, 0.0f, 0.0f});
-
-	Mat4f view;
-	view.translate({0.0f, 0.0f, -3.0f});
-
-	Mat4f projection;
-	projection.perspective(glm::radians(45.0f), 800.f, 600.f, 0.1f, 100.0f);
-	
-
 	while (!glfwWindowShouldClose(window)) {
 		process_input(window);
 
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glBindVertexArray(VAO);
 
-		float timeVal = static_cast<float>(glfwGetTime());
-		mainShader.uni_float("u_time", timeVal);
+		float time_val = static_cast<float>(glfwGetTime());
+		mainShader.uni_float("u_time", time_val);
+
+		Mat4f model;
+		model.rotate(time_val * glm::radians(45.0f), {0.5f, 1.0f, 0.0f});
+
+		Mat4f view;
+		view.translate({0.0f, 0.0f, -2.0f});
+
+		Mat4f projection;
+		projection.perspective(glm::radians(45.0f), 800.f, 600.f, 0.1f, 100.0f);
 
 		mainShader.uni_mat4fv("model", model.first_elem());
 		mainShader.uni_mat4fv("view", view.first_elem());
 		mainShader.uni_mat4fv("projection", projection.first_elem());
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		if (is_key_pressed(window, GLFW_KEY_LEFT_ALT) && is_key_pressed(window, GLFW_KEY_Q)) {
 			mainShader.reload(paths[0], paths[1]);
@@ -148,7 +183,7 @@ int main()
 	}
 	glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
+    //glDeleteBuffers(1, &EBO);
 	glfwTerminate();
 
 	return 0;

@@ -29,6 +29,17 @@ void trans_rot_scale(Mat4f& m, vec3 const* v_arr, float t)
 	m.scale(v_arr[modif::ROTE]);
 }
 
+struct ScrollInput
+{
+	float x;
+	float y;
+} sc_input;
+
+void sc_cb(GLFWwindow* w, double xoff, double yoff)
+{
+	sc_input.y += static_cast<float>(yoff / 10.0);
+}
+
 int main()
 {
 	ShaderLoader sl{"../shaders/pupa.txt"};
@@ -56,6 +67,8 @@ int main()
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glEnable(GL_DEPTH_TEST);
 
+	glfwSetScrollCallback(window, sc_cb);
+
 	constexpr char const* paths[2]{
 		"../shaders/01.vert",
 		"../shaders/01.frag"
@@ -64,35 +77,35 @@ int main()
 	SimpleShader mainShader{paths[0], paths[1]};
 
 	float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
 
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  1.0f, 0.0f, 0.0f,  
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,  1.0f, 0.0f, 0.0f,
 
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 1.0f,  0.0f, 0.0f, 1.0f,
 
-         0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, 1.0f,  0.0f, 1.0f, 1.0f,
 
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 1.0f,  1.0f, 1.0f, 0.0f,
 
-        -0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f
+        -0.5f,  0.5f, -0.5f,  0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,  1.0f, 0.0f, 1.0f
          
     };
 
@@ -128,24 +141,31 @@ int main()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 	Texture2d tex("img.png");
 	Texture2d tex2("kk.jpg");
 	Texture2d tex3("pikameme.png");
+	Texture2d tex4("kaka.jpg");
 
 	mainShader.uni_int("theTex", 0);
 	mainShader.uni_int("theKej", 1);
 	mainShader.uni_int("pikachu", 2);
+	mainShader.uni_int("kaka", 3);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
 	Mat4f trans;
+
+	sc_input.y = -2.0f;
 
 	while (!glfwWindowShouldClose(window)) {
 		process_input(window);
@@ -162,7 +182,7 @@ int main()
 		model.rotate(time_val * glm::radians(45.0f), {0.5f, 1.0f, 0.0f});
 
 		Mat4f view;
-		view.translate({0.0f, 0.0f, -2.0f});
+		view.translate({0.0f, 0.0f, sc_input.y});
 
 		Mat4f projection;
 		projection.perspective(glm::radians(45.0f), 800.f, 600.f, 0.1f, 100.0f);
@@ -187,7 +207,7 @@ int main()
 	}
 	glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    //glDeleteBuffers(1, &EBO);
+    glDeleteBuffers(1, &EBO);
 	glfwTerminate();
 
 	return 0;

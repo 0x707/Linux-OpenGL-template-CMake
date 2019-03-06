@@ -67,7 +67,7 @@ int main()
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glEnable(GL_DEPTH_TEST);
 
-	glfwSetScrollCallback(window, sc_cb);
+	glfwSetScrollCallback(window, sc_cb);;
 
 	constexpr char const* paths[2]{
 		"../shaders/01.vert",
@@ -165,7 +165,26 @@ int main()
 
 	Mat4f trans;
 
-	sc_input.y = -2.0f;
+	sc_input.y = -4.0f;
+
+	constexpr std::size_t c_cubes_count{2};
+	glm::vec3 cubes[c_cubes_count] {
+		{0.75f, 0.75f, -3.0f},
+		{-0.75f, - 0.75f, -5.0f}
+	};
+
+	Mat4f projection;
+	projection.perspective(glm::radians(45.0f), 800.f, 600.f, 0.1f, 100.0f);
+	mainShader.uni_mat4fv("projection", projection.first_elem());
+
+	auto do_some_transforms = [&mainShader](glm::vec3 const& cb_pos, float t){
+		Mat4f model;
+		model.translate(cb_pos);
+		model.rotate(t * glm::radians(45.0f), {1.0f, 1.0f, 0.0f});
+
+		mainShader.uni_mat4fv("model", model.first_elem());
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+	};
 
 	while (!glfwWindowShouldClose(window)) {
 		process_input(window);
@@ -178,20 +197,11 @@ int main()
 		float time_val = static_cast<float>(glfwGetTime());
 		mainShader.uni_float("u_time", time_val);
 
-		Mat4f model;
-		model.rotate(time_val * glm::radians(45.0f), {0.5f, 1.0f, 0.0f});
+		cubes[0].z = sc_input.y;
+		cubes[1].z = sc_input.y * 0.5f;
 
-		Mat4f view;
-		view.translate({0.0f, 0.0f, sc_input.y});
-
-		Mat4f projection;
-		projection.perspective(glm::radians(45.0f), 800.f, 600.f, 0.1f, 100.0f);
-
-		mainShader.uni_mat4fv("model", model.first_elem());
-		mainShader.uni_mat4fv("view", view.first_elem());
-		mainShader.uni_mat4fv("projection", projection.first_elem());
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-		//glDrawArrays(GL_TRIANGLES, 0, 6);
+		for (std::size_t i = 0; i < c_cubes_count; ++i)
+			do_some_transforms(cubes[i], time_val);
 
 		if (is_key_pressed(window, GLFW_KEY_LEFT_ALT) && is_key_pressed(window, GLFW_KEY_Q)) {
 			mainShader.reload(paths[0], paths[1]);

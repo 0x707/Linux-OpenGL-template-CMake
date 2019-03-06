@@ -36,9 +36,8 @@ ShaderLoader::~ShaderLoader()
 
 void ShaderLoader::open(char const* path)
 {
-    if (file_ == nullptr) {
+    if (file_ == nullptr)
         file_ = fopen(path, "rb");
-    }
     assert(file_ != nullptr);
 }
 
@@ -106,7 +105,10 @@ void SimpleShader::init_shader(char const* shaderPath)
     ShaderLoader sl{shaderPath};
     char const* shaderSource{sl.read()};
 
-    assert(++index_ < MAX_SHADERS + 1);
+    static int index = -1; // will this cause troubles?
+    index_ = ++index;
+
+    assert(index_ < MAX_SHADERS + 1);
     switch (shaderType) {
         case SHADER_TYPE::VERTEX:
             shaders_[index_] = glCreateShader(GL_VERTEX_SHADER);

@@ -6,7 +6,7 @@ constexpr int MAX_TEX_NO{9};
 class TextureLoader
 {
 public:
-    TextureLoader(char const*);
+    explicit TextureLoader(char const*);
     ~TextureLoader();
     TextureLoader(TextureLoader const&) = delete;
     TextureLoader& operator&(TextureLoader const&) = delete;
@@ -18,7 +18,7 @@ private:
     int no_channels_;
 };
 
-class Texture2d
+class Texture2d // consider making it singleton or someething better + use array for holding textures
 {
 public:
     Texture2d(char const*);

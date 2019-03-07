@@ -72,6 +72,11 @@ char const* ShaderLoader::read()
 
 // SIMPLE SHADER
 
+SimpleShader::~SimpleShader()
+{
+    stop_using();
+}
+
 void SimpleShader::check_errors()
 {
     int const cMaxMsgLen = 512;
@@ -105,10 +110,7 @@ void SimpleShader::init_shader(char const* shaderPath)
     ShaderLoader sl{shaderPath};
     char const* shaderSource{sl.read()};
 
-    static int index = -1; // will this cause troubles?
-    index_ = ++index;
-
-    assert(index_ < MAX_SHADERS + 1);
+    assert(++index_ < MAX_SHADERS);
     switch (shaderType) {
         case SHADER_TYPE::VERTEX:
             shaders_[index_] = glCreateShader(GL_VERTEX_SHADER);
@@ -130,14 +132,15 @@ void SimpleShader::init_program()
 {
     stop_using();
     program_ = glCreateProgram();
-    for (int i = 0; i < index_ + 1; ++i)
+    for (int i = 0; i <= index_; ++i)
         glAttachShader(program_, shaders_[i]);
     glLinkProgram(program_);
     check_errors_program();
 
-    for (int i = 0; i < index_ + 1; ++i)
+    for (int i = 0; i <= index_; ++i)
         glDeleteShader(shaders_[i]);
 
+    reset_index();
     use();
 }
 

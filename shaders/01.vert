@@ -7,7 +7,6 @@ out vec3 Pos;
 out vec3 Col;
 out vec2 Tex;
 
-uniform mat4 transform;
 uniform mat4 model;
 uniform mat4 projection;
 

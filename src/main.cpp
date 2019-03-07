@@ -208,8 +208,9 @@ int main()
 			mainShader.uni_int("theTex", 0);
 			mainShader.uni_int("theKej", 1);
 			mainShader.uni_int("pikachu", 2);
-
-			mainShader.uni_mat4fv("transform", trans.first_elem());
+			mainShader.uni_int("kaka", 3);
+			
+			mainShader.uni_mat4fv("projection", projection.first_elem());
 		}
 
 		glfwSwapBuffers(window);

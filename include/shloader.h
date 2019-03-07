@@ -1,5 +1,5 @@
 #include <glad/glad.h>
-#include <stdio.h>
+#include <cstdio>
 #include <cassert>
 
 #ifndef SHLOADER_CLASS_H_
@@ -31,6 +31,8 @@ public:
     template<typename... Cargs>
     SimpleShader(Cargs const* ...);
 
+    ~SimpleShader();
+
     SimpleShader(SimpleShader const&) = delete;
     SimpleShader& operator=(SimpleShader const&) = delete;
 
@@ -38,13 +40,13 @@ public:
     void uni_float(char const*, float);
     void uni_int(char const*, int);
     void uni_mat4fv(char const*, float const*);
-    unsigned const& get_program() const { return program_; }
+    std::size_t const& get_program() const { return program_; }
 
     template<typename... Cargs>
     void reload(Cargs const*...);
 private:
-    unsigned shaders_[MAX_SHADERS];
-    unsigned program_;
+    std::size_t shaders_[MAX_SHADERS];
+    std::size_t program_;
     bool remains_active_;
     int index_ = -1;
 
@@ -52,8 +54,9 @@ private:
     void check_errors_program();
     void init_shader(char const*);
     void init_program();
-    void use() { glUseProgram(program_); }
+    void reset_index() { index_ = -1; }
     void stop_using() { glDeleteProgram(program_); }
+    void use() { glUseProgram(program_); }
 
     template<typename C = char>
     void unpack(C const*);
@@ -84,7 +87,7 @@ void SimpleShader::unpack(C const* carg, Cargs const* ...cargs)
 template<typename... Cargs>
 void SimpleShader::reload(Cargs const* ...cargs)
 {
-    index_ = -1;
+    reset_index();
     unpack(cargs...);
     init_program();
 }

@@ -6,6 +6,12 @@ float const* Mat4f::first_elem() const
     return &mat_[0][0];
 }
 
+void Mat4f::look_at(vec3 const& pos, vec3 const& target,
+    vec3 const& up)
+{
+    mat_ = glm::lookAt(pos, target, up);
+}
+
 void Mat4f::normalize()
 {
     mat_ = mat4{ 1.0f };

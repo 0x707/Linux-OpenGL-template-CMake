@@ -186,6 +186,9 @@ int main()
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 	};
 
+	float radius = 10.0f;
+	Mat4f view;
+
 	while (!glfwWindowShouldClose(window)) {
 		process_input(window);
 
@@ -199,6 +202,14 @@ int main()
 
 		cubes[0].z = sc_input.y;
 		cubes[1].z = sc_input.y * 0.5f;
+
+		view.normalize();
+		float camX = sin(time_val) * radius;
+		float camZ = cos(time_val) * radius;
+		view.look_at({camX, 0.0f, camZ},
+					 {0.0f, 0.0f, 0.0f},
+					 {0.0f, 1.0f, 0.0f});
+		mainShader.uni_mat4fv("view", view.first_elem());
 
 		for (std::size_t i = 0; i < c_cubes_count; ++i)
 			do_some_transforms(cubes[i], time_val);

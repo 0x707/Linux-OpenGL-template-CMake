@@ -13,6 +13,7 @@ enum modif {
 class Mat4f
 {
 public:
+    void look_at(vec3 const&, vec3 const&, vec3 const&);
     void normalize();
     void perspective(float, float, float, float, float);
     void rotate(float, vec3 const&);

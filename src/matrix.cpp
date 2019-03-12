@@ -1,5 +1,12 @@
 #include "matrix.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include <utility>
+
+Mat4f& Mat4f::operator=(mat4&& mat)
+{
+    mat_ = std::move(mat);
+    return *this;
+}
 
 float const* Mat4f::first_elem() const
 {

@@ -6,7 +6,7 @@
 
 namespace {
 
-    SHADER_TYPE get_shader_type(char const* shader_path)
+    SHADER_TYPE get_shader_type(char const* shader_path) noexcept
     {
         char const* index{ shader_path };
         while (*(++index) != '\0');
@@ -23,7 +23,7 @@ namespace {
 
 } // namespace anonymous
 
-ShaderLoader::ShaderLoader(char const* path)
+ShaderLoader::ShaderLoader(char const* path) noexcept
 {
     file_ = fopen(path, "rb");
     assert(file_ != nullptr);
@@ -34,14 +34,14 @@ ShaderLoader::~ShaderLoader()
     close();
 }
 
-void ShaderLoader::open(char const* path)
+void ShaderLoader::open(char const* path) noexcept
 {
     if (file_ == nullptr)
         file_ = fopen(path, "rb");
     assert(file_ != nullptr);
 }
 
-void ShaderLoader::close()
+void ShaderLoader::close() noexcept
 {
     if (file_ != nullptr)
         fclose(file_);
@@ -51,7 +51,7 @@ void ShaderLoader::close()
     content_ = nullptr;
 }
 
-char const* ShaderLoader::read()
+char const* ShaderLoader::read() noexcept
 {
    if (file_ != nullptr) {
        fseek(file_, 0, SEEK_END);
@@ -77,7 +77,7 @@ SimpleShader::~SimpleShader()
     stop_using();
 }
 
-void SimpleShader::check_errors()
+void SimpleShader::check_errors() noexcept
 {
     int const cMaxMsgLen = 512;
     int success;
@@ -90,7 +90,7 @@ void SimpleShader::check_errors()
 	}
 }
 
-void SimpleShader::check_errors_program()
+void SimpleShader::check_errors_program() noexcept
 {
     int const cMaxMsgLen = 512;
     int success;
@@ -103,7 +103,7 @@ void SimpleShader::check_errors_program()
 	}
 }
 
-void SimpleShader::init_shader(char const* shaderPath)
+void SimpleShader::init_shader(char const* shaderPath) noexcept
 {
     SHADER_TYPE shaderType{get_shader_type(shaderPath)};
 
@@ -128,7 +128,7 @@ void SimpleShader::init_shader(char const* shaderPath)
     check_errors();
 }
 
-void SimpleShader::init_program()
+void SimpleShader::init_program() noexcept
 {
     stop_using();
     program_ = glCreateProgram();
@@ -144,17 +144,17 @@ void SimpleShader::init_program()
     use();
 }
 
-void SimpleShader::uni_float(char const* uni_name, float val)
+void SimpleShader::uni_float(char const* uni_name, float val) noexcept
 {
     glUniform1f(glGetUniformLocation(program_, uni_name), val);
 }
 
-void SimpleShader::uni_int(char const* uni_name, int val)
+void SimpleShader::uni_int(char const* uni_name, int val) noexcept
 {
     glUniform1i(glGetUniformLocation(program_, uni_name), val);
 }
 
-void SimpleShader::uni_mat4fv(char const* uni_name, float const* mat_ptr)
+void SimpleShader::uni_mat4fv(char const* uni_name, float const* mat_ptr) noexcept
 {
     glUniformMatrix4fv(glGetUniformLocation(program_, uni_name), 1, GL_FALSE, mat_ptr);
 }

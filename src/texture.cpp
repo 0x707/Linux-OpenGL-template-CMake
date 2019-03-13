@@ -3,7 +3,7 @@
 #include "texture.h"
 #include <cassert>
 
-TextureLoader::TextureLoader(char const* path)
+TextureLoader::TextureLoader(char const* path) noexcept
     : buffer_{ stbi_load(path, &width_, &height_, &no_channels_, 0) }
 {
     assert(buffer_ != nullptr);
@@ -17,7 +17,7 @@ TextureLoader::~TextureLoader()
     free_buffer();
 }
 
-void TextureLoader::free_buffer()
+void TextureLoader::free_buffer() noexcept
 {
     if (buffer_ != nullptr)
         stbi_image_free(buffer_);
@@ -28,7 +28,7 @@ void TextureLoader::free_buffer()
 
 int Texture2d::index_ = -1;
 
-Texture2d::Texture2d(char const* path)
+Texture2d::Texture2d(char const* path) noexcept
 {
     //static int index = -1;
     glGenTextures(1, &tex_holder_);

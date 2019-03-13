@@ -6,11 +6,11 @@ constexpr int MAX_TEX_NO{9};
 class TextureLoader
 {
 public:
-    explicit TextureLoader(char const*);
+    explicit TextureLoader(char const*) noexcept;
     ~TextureLoader();
     TextureLoader(TextureLoader const&) = delete;
     TextureLoader& operator&(TextureLoader const&) = delete;
-    void free_buffer();
+    void free_buffer() noexcept;
 private:
     unsigned char* buffer_ = nullptr;
     int width_;
@@ -21,7 +21,7 @@ private:
 class Texture2d // consider making it singleton or someething better + use array for holding textures
 {
 public:
-    Texture2d(char const*);
+    Texture2d(char const*) noexcept;
     ~Texture2d();
 private:
     unsigned tex_holder_;

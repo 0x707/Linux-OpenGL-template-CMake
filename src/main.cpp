@@ -6,19 +6,19 @@
 #include "matrix.h"
 #include <glm/gtc/matrix_transform.hpp>
 
-void framebuffer_size_callback(GLFWwindow* window, int w, int h)
+void framebuffer_size_callback(GLFWwindow* window, int w, int h) noexcept
 {
 	glViewport(0, 0, w, h);
 }
 
-void process_input(GLFWwindow*);
+void process_input(GLFWwindow*) noexcept;
 
-bool is_key_pressed(GLFWwindow* window, int key)
+bool is_key_pressed(GLFWwindow* window, int key) noexcept
 {
 	return glfwGetKey(window, key) == GLFW_PRESS;
 }
 
-void trans_rot_scale(Mat4f& m, vec3 const* v_arr, float t)
+void trans_rot_scale(Mat4f& m, vec3 const* v_arr, float t) noexcept
 {
 	m.normalize();
 	m.translate(v_arr[modif::TRNS]);
@@ -32,13 +32,13 @@ struct ScrollInput
 	float y;
 } sc_input;
 
-void sc_cb(GLFWwindow* w, double xoff, double yoff)
+void sc_cb(GLFWwindow* w, double xoff, double yoff) noexcept
 {
 	sc_input.y += static_cast<float>(yoff / 10.0);
 }
 
 struct Camera {
-	void set_speed() { speed_ = 2.5f * dt_time_; }
+	void set_speed() noexcept { speed_ = 2.5f * dt_time_; }
 
 	glm::vec3 pos_ = glm::vec3{0.0f, 0.0f, 3.0f};
 	glm::vec3 front_ = glm::vec3{0.0f, 0.0f, -1.0};
@@ -242,7 +242,7 @@ int main()
 	return 0;
 }
 
-void process_input(GLFWwindow* window)
+void process_input(GLFWwindow* window) noexcept
 {
 	glfwSetWindowShouldClose(window, glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS);
 

@@ -13,16 +13,16 @@ enum modif {
 class Mat4f
 {
 public:
-    Mat4f& operator=(mat4&&);
+    Mat4f& operator=(mat4&&) noexcept;
 
-    void look_at(vec3 const&, vec3 const&, vec3 const&);
-    void normalize();
-    void perspective(float, float, float, float, float);
-    void rotate(float, vec3 const&);
-    void scale(vec3 const&);
-    void translate(vec3 const&);
+    void look_at(vec3 const&, vec3 const&, vec3 const&) noexcept;
+    void normalize() noexcept;
+    void perspective(float, float, float, float, float) noexcept;
+    void rotate(float, vec3 const&) noexcept;
+    void scale(vec3 const&) noexcept;
+    void translate(vec3 const&) noexcept;
 
-    float const* first_elem() const;
+    float const* first_elem() const noexcept;
 private:
     mat4 mat_{1.0f};
 };

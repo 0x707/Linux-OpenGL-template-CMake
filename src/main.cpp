@@ -7,6 +7,8 @@
 #include "detail/array_f.h"
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "point.h"
+
 void framebuffer_size_callback(GLFWwindow* window, int w, int h) noexcept
 {
 	glViewport(0, 0, w, h);
@@ -119,6 +121,8 @@ int main()
          
     };
 
+	array_f<arr_size(vertices), 3> arrf{vertices, std::array<std::size_t, 3>{3,2,3}};
+
 	unsigned indices[] {
 		0, 1, 2,
 		2, 3, 0,
@@ -139,8 +143,6 @@ int main()
 		22, 23, 20
 	};
 
-	array_f<arr_size(vertices), 3> arrf{vertices, std::array<std::size_t, 3>{3,2,3}};
-
 	unsigned EBO, VBO, VAO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &EBO);
@@ -148,18 +150,18 @@ int main()
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, arrf.sizeof_this(), arrf.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, arrf.sizeof_content(), arrf.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, arrf.stride_elem(0), GL_FLOAT, GL_FALSE, arrf.offset_size(), (void*)arrf.stride(0));
+	glVertexAttribPointer(0, arrf.stride(0), GL_FLOAT, GL_FALSE, arrf.sizeof_offset(), (void*)arrf.read_from_here(0));
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, arrf.stride_elem(1), GL_FLOAT, GL_FALSE, arrf.offset_size(), (void *)arrf.stride(1));
+	glVertexAttribPointer(1, arrf.stride(1), GL_FLOAT, GL_FALSE, arrf.sizeof_offset(), (void *)arrf.read_from_here(1));
 	glEnableVertexAttribArray(1);
 
-	glVertexAttribPointer(2, arrf.stride_elem(2), GL_FLOAT, GL_FALSE, arrf.offset_size(), (void*)arrf.stride(2));
+	glVertexAttribPointer(2, arrf.stride(2), GL_FLOAT, GL_FALSE, arrf.sizeof_offset(), (void*)arrf.read_from_here(2));
 	glEnableVertexAttribArray(2);
 
 	Texture2d tex("img.png");

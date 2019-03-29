@@ -16,14 +16,23 @@ class array_f
 {
 public:
 	constexpr array_f(std::array<float, S1>, stride_arr<S2>) noexcept;
-	constexpr array_f(float(&)[S1], stride_arr<S2>) noexcept;
-	constexpr std::array<float, S1> const& get() const noexcept { return arr_; }
+	constexpr array_f(float const (&)[S1], stride_arr<S2>) noexcept;
 
-	constexpr std::size_t stride_elem(int) const noexcept;
-	constexpr std::size_t offset_size() const noexcept;
-	constexpr std::size_t stride(int) const noexcept;
-	constexpr std::size_t sizeof_this() const noexcept;
+	constexpr array_f(array_f<S1, S2> const&) = default;
+	constexpr array_f(array_f<S1, S2>&&) = default;
+	constexpr array_f<S1,S2>& operator=(array_f<S1, S2> const& other) = default;
+	constexpr array_f<S1,S2>& operator=(array_f<S1, S2>&&) = default;
+
+	constexpr float operator[](std::size_t) const noexcept;
+
 	constexpr float const* data() const noexcept;
+	
+	constexpr std::size_t read_from_here(std::size_t) const noexcept;
+	constexpr std::size_t size() const noexcept { return S1; }
+	constexpr std::size_t strides_size() const noexcept { return S2; }
+	constexpr std::size_t sizeof_content() const noexcept;
+	constexpr std::size_t sizeof_offset() const noexcept;
+	constexpr std::size_t stride(int) const noexcept;
 private:
 	std::array<float, S1> arr_;
 	stride_arr<S2> strides_;

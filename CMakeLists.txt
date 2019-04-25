@@ -11,7 +11,15 @@ include_directories(GL_TEST
 	"~/libs/glm")
 
 
-set(SOURCE src/main.cpp src/glad.c src/shloader.cpp src/texture.cpp src/stb_image.cpp src/matrix.cpp)
+set(SOURCE
+	src/main.cpp
+	src/glad.c
+	src/shloader.cpp
+	src/texture.cpp
+	src/stb_image.cpp
+	src/matrix.cpp
+	src/gl_stuff/common_utils.cpp
+	src/camera.cpp)
 
 add_executable(GL_TEST ${SOURCE})
 

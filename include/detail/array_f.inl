@@ -32,7 +32,7 @@ constexpr std::size_t stride_offset(stride_arr<S> const& arr, std::size_t idx)
 template<std::size_t S1, std::size_t S2>
 constexpr array_f<S1,S2>::array_f(
 	std::array<float, S1> arr, stride_arr<S2> strides ) noexcept
-	: arr_{std::move(arr)}, strides_{std::move(strides)}
+	: arr_{arr}, strides_{strides}
 	, offset_{ count_offset(strides_) }
 {
 	assert(offset_ <= S1 && (S1 % offset_ == 0));
@@ -40,7 +40,7 @@ constexpr array_f<S1,S2>::array_f(
 
 template<std::size_t S1, std::size_t S2>
 constexpr array_f<S1, S2>::array_f(float const (&arr)[S1], stride_arr<S2> strides) noexcept
-	: strides_{std::move(strides)}
+	: strides_{strides}
 	, offset_{ count_offset(strides_) }
 {
 	assert(offset_ <= S1 && (S1 % offset_ == 0));

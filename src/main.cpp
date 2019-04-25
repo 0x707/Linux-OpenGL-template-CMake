@@ -5,6 +5,8 @@
 #include "texture.h"
 #include "matrix.h"
 #include "detail/array_f.h"
+#include "gl_stuff/vertex_array.h"
+#include "gl_stuff/vertex_buffer.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "point.h"
@@ -143,26 +145,18 @@ int main()
 		22, 23, 20
 	};
 
-	unsigned EBO, VBO, VAO;
-	glGenVertexArrays(1, &VAO);
+	VAO vao{};
+	VBO vbo{arrf};
+	unsigned EBO;
+
 	glGenBuffers(1, &EBO);
-	glGenBuffers(1, &VBO);
-	glBindVertexArray(VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, arrf.sizeof_content(), arrf.data(), GL_STATIC_DRAW);
-
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, arrf.stride(0), GL_FLOAT, GL_FALSE, arrf.sizeof_offset(), (void*)arrf.read_from_here(0));
-	glEnableVertexAttribArray(0);
+	vbo.fill_data(arrf);
 
-	glVertexAttribPointer(1, arrf.stride(1), GL_FLOAT, GL_FALSE, arrf.sizeof_offset(), (void *)arrf.read_from_here(1));
-	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(2, arrf.stride(2), GL_FLOAT, GL_FALSE, arrf.sizeof_offset(), (void*)arrf.read_from_here(2));
-	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	unbind_vertex_array();
 
 	Texture2d tex("img.png");
 	Texture2d tex2("kk.jpg");
@@ -173,9 +167,6 @@ int main()
 	mainShader.uni_int("theKej", 1);
 	mainShader.uni_int("pikachu", 2);
 	mainShader.uni_int("kaka", 3);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
 
 	Mat4f trans;
 
@@ -208,7 +199,7 @@ int main()
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glBindVertexArray(VAO);
+		vao.bind();
 
 		float time_val = static_cast<float>(glfwGetTime());
 		mainShader.uni_float("u_time", time_val);
@@ -220,7 +211,7 @@ int main()
 		cubes[1].z = sc_input.y * 0.5f;
 
 		view.normalize();
-		view = glm::lookAt(camera.pos_, camera.front_, camera.up_);
+		view = glm::lookAt(camera.pos_, camera.pos_ + camera.front_, camera.up_);
 		mainShader.uni_mat4fv("view", view.first_elem());
 
 		for (std::size_t i = 0; i < c_cubes_count; ++i)
@@ -239,8 +230,7 @@ int main()
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-	glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+
     glDeleteBuffers(1, &EBO);
 	glfwTerminate();
 

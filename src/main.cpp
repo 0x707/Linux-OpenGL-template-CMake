@@ -8,8 +8,10 @@
 #include "gl_stuff/vertex_array.h"
 #include "gl_stuff/vertex_buffer.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include "camera.h"
 
-#include "point.h"
+camera cam{glm::vec3{0.f, 0.f, 3.f},
+		   glm::vec3{0.f, 1.f, 0.f}};
 
 void framebuffer_size_callback(GLFWwindow* window, int w, int h) noexcept
 {

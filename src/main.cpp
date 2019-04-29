@@ -11,7 +11,10 @@
 #include "camera.h"
 
 camera cam{glm::vec3{0.f, 0.f, 3.f},
-		   glm::vec3{0.f, 1.f, 0.f}};
+		   glm::vec3{0.f, 1.f, 0.f}};		
+
+float g_dt_time = 0.0f;
+float g_last_frame = 0.0f;
 
 void framebuffer_size_callback(GLFWwindow* window, int w, int h) noexcept
 {
@@ -43,18 +46,6 @@ void sc_cb(GLFWwindow* w, double xoff, double yoff) noexcept
 {
 	sc_input.y += static_cast<float>(yoff / 10.0);
 }
-
-struct Camera {
-	void set_speed() noexcept { speed_ = 2.5f * dt_time_; }
-
-	glm::vec3 pos_ = glm::vec3{0.0f, 0.0f, 3.0f};
-	glm::vec3 front_ = glm::vec3{0.0f, 0.0f, -1.0};
-	glm::vec3 up_ = glm::vec3{0.0f, 1.0f, 0.0f};
-
-	float speed_ = 0.05f;
-	float dt_time_ = 0.0f;
-	float last_frame_ = 0.0f;
-} camera;
 
 int main()
 {
@@ -181,7 +172,7 @@ int main()
 	};
 
 	Mat4f projection;
-	projection.perspective(glm::radians(45.0f), 800.f, 600.f, 0.1f, 100.0f);
+	projection.perspective(glm::radians(cam.get_zoom()), 800.f, 600.f, 0.1f, 100.0f);
 	mainShader.uni_mat4fv("projection", projection.first_elem());
 
 	auto do_some_transforms = [&mainShader](glm::vec3 const& cb_pos, float t){
@@ -206,14 +197,14 @@ int main()
 		float time_val = static_cast<float>(glfwGetTime());
 		mainShader.uni_float("u_time", time_val);
 
-		camera.dt_time_ = time_val - camera.last_frame_;
-		camera.last_frame_ = time_val;
+		g_dt_time = time_val - g_last_frame;
+		g_last_frame = time_val;
 
 		cubes[0].z = sc_input.y;
 		cubes[1].z = sc_input.y * 0.5f;
 
 		view.normalize();
-		view = glm::lookAt(camera.pos_, camera.pos_ + camera.front_, camera.up_);
+		view = cam.view_matrix();
 		mainShader.uni_mat4fv("view", view.first_elem());
 
 		for (std::size_t i = 0; i < c_cubes_count; ++i)
@@ -243,13 +234,12 @@ void process_input(GLFWwindow* window) noexcept
 {
 	glfwSetWindowShouldClose(window, glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS);
 
-	camera.set_speed();
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.pos_ += camera.speed_ * camera.front_;
+		cam.kb_input(CAM_DIR::FRWD, g_dt_time);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.pos_ -= camera.speed_ * camera.front_;
+		cam.kb_input(CAM_DIR::BCWD, g_dt_time);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.pos_ -= glm::normalize(glm::cross(camera.front_, camera.up_)) * camera.speed_;
+		cam.kb_input(CAM_DIR::LEFT, g_dt_time);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.pos_ += glm::normalize(glm::cross(camera.front_, camera.up_)) * camera.speed_;
+		cam.kb_input(CAM_DIR::RGHT, g_dt_time);
 }

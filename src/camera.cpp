@@ -6,9 +6,6 @@ using glm::radians;
 using glm::normalize;
 using glm::cross;
 
-enum class CAM_DIR {
-    FRWD, BCWD, LEFT, RGHT };
-
 struct camera::pImpl
 {
     pImpl(vec3 pos, vec3 wup, float yaw, float pitch)
@@ -117,4 +114,9 @@ void camera::ms_input(float xoff, float yoff) noexcept
 void camera::ms_scroll(float yoff) noexcept
 {
     impl_->mouse_scroll(yoff);
+}
+
+float camera::get_zoom() const noexcept
+{
+    return impl_->zoom_;
 }

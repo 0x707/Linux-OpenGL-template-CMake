@@ -4,7 +4,8 @@
 #include <memory>
 #include <glm/glm.hpp>
 
-enum class CAM_DIR;
+enum class CAM_DIR {
+    FRWD, BCWD, LEFT, RGHT };
 
 constexpr float cYaw = -90.f;
 constexpr float cPitch = 0.f;
@@ -22,6 +23,7 @@ public:
     void kb_input(CAM_DIR, float) noexcept;
     void ms_input(float, float) noexcept;
     void ms_scroll(float) noexcept;
+    float get_zoom() const noexcept;
 private:
     struct pImpl;
     std::unique_ptr<pImpl> impl_;

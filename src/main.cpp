@@ -7,6 +7,7 @@
 #include "detail/array_f.h"
 #include "gl_stuff/vertex_array.h"
 #include "gl_stuff/vertex_buffer.h"
+#include "gl_stuff/element_vertex_buffer.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "camera.h"
 
@@ -138,13 +139,11 @@ int main()
 		22, 23, 20
 	};
 
+	// Init vertex array, vertex vuffer and element buffer
 	VAO vao{};
 	VBO vbo{arrf};
-	unsigned EBO;
-
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	EBO ebo{indices};
+	// !
 
 	vbo.fill_data(arrf);
 
@@ -223,8 +222,6 @@ int main()
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-
-    glDeleteBuffers(1, &EBO);
 	glfwTerminate();
 
 	return 0;

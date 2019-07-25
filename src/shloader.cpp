@@ -3,6 +3,9 @@
 #include <iostream>
 #include <cassert>
 #include <cstring>
+#include <errno.h>
+
+enum class SHADER_TYPE { VERTEX, FRAGMENT };
 
 namespace {
 
@@ -25,8 +28,7 @@ namespace {
 
 ShaderLoader::ShaderLoader(char const* path) noexcept
 {
-    file_ = fopen(path, "rb");
-    assert(file_ != nullptr);
+    open(path);
 }
 
 ShaderLoader::~ShaderLoader()
@@ -38,7 +40,7 @@ void ShaderLoader::open(char const* path) noexcept
 {
     if (file_ == nullptr)
         file_ = fopen(path, "rb");
-    assert(file_ != nullptr);
+    assert(errno != EINVAL);
 }
 
 void ShaderLoader::close() noexcept

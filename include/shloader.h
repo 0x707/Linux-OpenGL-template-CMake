@@ -5,7 +5,7 @@
 #ifndef SHLOADER_CLASS_H_
 #define SHLOADER_CLASS_H_
 
-enum class SHADER_TYPE { VERTEX, FRAGMENT };
+enum class SHADER_TYPE;
 constexpr int MAX_SHADERS{16};
 
 class ShaderLoader
@@ -21,7 +21,7 @@ public:
     void close() noexcept;
     char const* read() noexcept;
 private:
-    FILE* file_;
+    FILE* file_ = nullptr;
     char* content_ = nullptr;
 };
 
